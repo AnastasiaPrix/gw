@@ -1,0 +1,13 @@
+<div class="grid-container">
+  <h1 class="mat-h1">Dashboard</h1>
+
+
+     <app-graph [nodes]='nodes' ></app-graph>
+      <div>
+        <ul>
+          <li *ngFor="let n of node | async">Node {{n.id}}</li>
+        </ul>
+        </div>
+      
+
+</div>

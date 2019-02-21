@@ -1,0 +1,120 @@
+import {Component, Input, OnChanges, OnInit, ViewChild} from '@angular/core';
+import { map } from 'rxjs/operators';
+import { Breakpoints, BreakpointState, BreakpointObserver } from '@angular/cdk/layout';
+import { NodeService } from '../node.service';
+import { Observable } from 'rxjs';
+import { PpuNode } from '../model/ppu_node';
+import {EventSourcePolyfill} from 'ng-event-source';
+import {Link, Node} from '../d3/models';
+import * as d3 from 'd3';
+import * as shape from 'd3-shape';
+import {randomBates} from 'd3';
+
+// import {Link} from 'd3';
+
+@Component({
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css'],
+})
+
+export class DashboardComponent implements OnInit {
+// export class DashboardComponent implements OnChanges {
+ // @ViewChild('graph')
+  node: Observable<PpuNode[]>;
+  // nodes: Node[] = [];
+  Graph = {nodes: [], links: []};
+  curve = shape.curveBundle(1);
+// links: Link[] = [];
+
+ // @Input()
+  // nodes: PpuNode[];
+ // nodes: Observable<PpuNode[]>
+  // margin = {top: 20, right: 20, bottom: 30, left: 40};
+  constructor(private breakpointObserver: BreakpointObserver, private nodeService: NodeService) {
+  // constructor() {
+    this.node = nodeService.getNodeStream(); }
+   // const getIndex = number => number - 1;
+
+    /** constructing the nodes array
+    // for (let i = 1; i <= N; i++) {
+    // if (this.node != null) {
+      // console.log('new node!');
+   // }
+    let i = 1;
+    this.node.subscribe(value => {
+    	let i=this.nodes.length;
+      const n = new Node(i);
+      n.x=100+40*i;
+      n.y=100;
+      this.nodes.push(n);
+      console.log('new node! ', this.nodes.length );});
+    /*this.node.forEach(value => {
+      const n = new Node(i);
+      this.nodes.push(n);
+      console.log('new node! ', this.nodes.length );
+       if (this.nodes.length >= 2) {
+        this.nodes[i - 2].linkCount++;
+        this.nodes[i - 1].linkCount++;
+        this.links.push(new Link(i - 2 , i - 1)); }
+      i++;
+    });/*
+    /*
+      this.nodes.push(new Node(i));
+    } */
+   /* for (let j = 1; j <= this.nodes.length; j++) {
+      for (let m = 2; j * m <= this.nodes.length; m++) {
+        /** increasing connections toll on connecting nodes
+        this.nodes[getIndex(j)].linkCount++;
+        this.nodes[getIndex(j * m)].linkCount++;
+        /** connecting the nodes before starting the simulation
+        this.links.push(new Link(j, j * m));
+      }
+    }
+   */
+ // }
+
+  ngOnInit(): void {
+  }
+   
+  showGraph() {
+
+  }
+  /*
+  onResize() {
+    this.createGraph();
+  }
+  ngOnChanges(): void {
+
+    if (!this.nodes) {
+      console.log('new node!!!');
+      return; }
+
+    this.createGraph();
+  }
+  private createGraph(): void {
+    d3.select('svg').remove();
+
+   // const element = this.chartContainer.nativeElement;
+  //  const data = this.nodes;
+
+    const svg = d3.select('svg')
+      .attr('width', 800)
+      .attr('height', 600);
+
+   // const contentWidth = element.offsetWidth - this.margin.left - this.margin.right;
+   // const contentHeight = element.offsetHeight - this.margin.top - this.margin.bottom;
+    const leaf = svg.selectAll('g')
+      .data(this.nodes)
+      .enter().append('g')
+      .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+
+    leaf.append('circle')
+      .attr('id', d => (d.id))
+      .attr('r', '20px')
+      .attr ('cx', d3.randomBates(700))
+      .attr ('cy',  d3.randomBates(500))
+      .attr('fill', 'red');
+
+  } */
+}

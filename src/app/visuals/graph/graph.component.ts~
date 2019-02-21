@@ -1,0 +1,40 @@
+import { Component, Input, ChangeDetectorRef, HostListener, ChangeDetectionStrategy, OnInit, AfterViewInit } from '@angular/core';
+import {ForceDirectedGraph, Node} from '../../d3';
+import {D3Service} from '../../d3/d3.service';
+
+@Component({
+  selector: 'app-graph',
+  template: `
+    <svg #svg [attr.width]="_options.width" [attr.height]="_options.height">
+      <svg:g>
+      <svg:g [linkVisual]="link" *ngFor="let link of links"></svg:g>
+        <svg:g [nodeVisual]="node" *ngFor="let node of nodes"></svg:g>
+      </svg:g>
+    </svg>
+  `,
+  styleUrls: ['./graph.component.css']
+})
+export class GraphComponent implements OnInit{
+  @Input() nodes;
+  @Input() links;
+
+  graph: ForceDirectedGraph;
+  _options: { width, height } = { width: 800, height: 600 };
+
+
+constructor(private d3s:D3Service) {
+  	console.log('in constructor graph!');
+  }
+
+  ngOnInit() {
+  	console.log('in constructor graph!');
+    
+  }
+
+  get options() {
+    return this._options = {
+      width: window.innerWidth,
+      height: window.innerHeight
+    };
+  }
+}
