@@ -1,6 +1,7 @@
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Injectable, Input, OnInit} from '@angular/core';
 import {ForceDirectedGraph, Link, Node} from '../../d3';
 import {Observable} from 'rxjs';
+import * as d3 from 'd3';
 
 @Component({
   selector: 'app-graph',
@@ -9,7 +10,8 @@ import {Observable} from 'rxjs';
     <svg #svg [attr.width]="_options.width" [attr.height]="_options.height">
       <svg:g>
       <svg:g [linkVisual]="link" *ngFor="let link of links  "></svg:g>
-        <svg:g [nodeVisual]="node" *ngFor="let node of nodes_r "></svg:g>
+        <svg:g [nodeVisual]="node" *ngFor="let node of nodes_r"
+               [draggableNode] = "node" [draggableInGraph] = "graph"></svg:g>
       </svg:g>
     </svg>
   `,
@@ -72,5 +74,37 @@ constructor(private ref: ChangeDetectorRef) {
     if (!options) { options = {width: '640', height: '640' }; }
     const sg = new ForceDirectedGraph( nodes, links, options );
     return sg;
+  }
+
+  applyDraggableBehaviour(element, node: Node, graph: ForceDirectedGraph) {
+    const d3element = d3.select(element);
+
+    function started() {
+      /** Preventing propagation of dragstart to parent elements */
+      d3.event.sourceEvent.stopPropagation();
+
+      if (!d3.event.active) {
+        graph.simulation.alphaTarget(0.3).restart();
+      }
+
+      d3.event.on('drag', dragged).on('end', ended);
+
+      function dragged() {
+        node.fx = d3.event.x;
+        node.fy = d3.event.y;
+      }
+
+      function ended() {
+        if (!d3.event.active) {
+          graph.simulation.alphaTarget(0);
+        }
+
+        node.fx = null;
+        node.fy = null;
+      }
+    }
+
+    d3element.call(d3.drag()
+      .on('start', started));
   }
 }

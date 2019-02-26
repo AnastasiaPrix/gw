@@ -8,7 +8,7 @@ export class D3Service {
     * while maintaining the d3 simulations physics
     */
     constructor() {
-      console.log("d3service") ;   
+      console.log('d3service') ;
     }
 
 }

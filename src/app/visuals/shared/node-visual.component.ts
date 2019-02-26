@@ -8,9 +8,12 @@ import {Node} from '../../d3/models';
       <svg:circle
           cx="0"
           cy="0"
-          r="10">
+          r="10"
+          fill="steelblue"
+          stroke="black">
       </svg:circle>
-      <svg:text>
+      <svg:text
+      color="blue">
         {{node.id}}
       </svg:text>
     </svg:g>

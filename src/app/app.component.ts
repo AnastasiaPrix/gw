@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {NodeService} from './node.service';
 import {Observable} from 'rxjs';
 import {PpuNode} from './model/ppu_node';
+import {Node} from './d3/models';
 
 
 type CallbackFcn = (data: any) => void;
@@ -30,8 +31,7 @@ export class AppComponent implements OnInit {
   protected _eventSource: EventSource;
   // have we subscribed to an event stream yet?
   protected _subscribed = false;
-  nodes: Observable<PpuNode[]>;
-
+  nodes: Observable<Node[]>;
   /*public toggle_sidenav(): void {
     this.sidenav_state = !this.sidenav_state;
   }*/
@@ -39,7 +39,7 @@ export class AppComponent implements OnInit {
    /* this._eventSource           = new EventSource('/node_stream');
     this._eventSource.onmessage = (data) => this.__onMessage(data);
     console.log("ev started");*/
-    this.nodes = _nodeService.getNodeStream();
+    this.nodes = _nodeService.getNodes();
   }
 
   ngOnInit(): void {

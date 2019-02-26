@@ -10,6 +10,6 @@ export class ZoomableDirective implements OnInit {
   constructor(private d3Service: D3Service, private _element: ElementRef) {}
 
   ngOnInit() {
-   
+
   }
 }

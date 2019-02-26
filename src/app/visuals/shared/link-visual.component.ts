@@ -11,7 +11,7 @@ import {Link} from '../../d3/models';
         [attr.y1]="link.source.y"
         [attr.x2]="link.target.x"
         [attr.y2]="link.target.y"
-      stroke="red"
+      stroke="navy"
     ></svg:line>
   `
 })

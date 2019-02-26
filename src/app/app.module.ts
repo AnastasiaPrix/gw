@@ -21,6 +21,7 @@ import { HttpClientModule } from '@angular/common/http';
 import {GraphComponent} from './visuals/graph/graph.component';
 import {NodeVisualComponent} from './visuals/shared/node-visual.component';
 import {LinkVisualComponent} from './visuals/shared/link-visual.component';
+import {DraggableDirective, ZoomableDirective} from './d3/directives';
 
 
 const appRoutes: Routes = [
@@ -37,6 +38,8 @@ const appRoutes: Routes = [
     GraphComponent,
     NodeVisualComponent,
     LinkVisualComponent,
+    ZoomableDirective,
+    DraggableDirective,
   ],
   imports: [
     BrowserModule,
