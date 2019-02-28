@@ -4,9 +4,10 @@ import { HttpClient, HttpEvent, HttpEventType, HttpResponse, HttpHeaders } from 
 import { PpuNode } from './model/ppu_node';
 import {map, filter, tap} from 'rxjs/operators';
 import {EventSourcePolyfill} from 'ng-event-source';
-import {Link, Node} from './d3/models';
+import {ForceDirectedGraph, Link, Node} from './d3/models';
 import {randomBates} from 'd3-random';
 import {NodeLinks} from './model/NodeLinks';
+import {GraphComponent} from './visuals/graph/graph.component';
 
 @Injectable ({
     providedIn: 'root'
@@ -22,18 +23,23 @@ export class NodeService {
 
   constructor(private http: HttpClient) {
    const that = this;
-    let i = 2;
+   // let i = 2;
     this.data_nodes = Observable.create(observer => {
       const eventSource = new EventSourcePolyfill('/node_stream', { heartbeatTimeout: 5000, connectionTimeout: 5000});
       eventSource.onmessage = event => {
-        const n = new Node(i - 1);
-        // n.id = event.data;
-        const n1 = new Node(i);
-        n.linkCount++;
-        n1.linkCount++;
-        that.data2.push(n);
-        that.data2.push(n1);
-        i = i + 2;
+       const m = Math.floor(Math.random() *  15  + 1);
+       console.log(m, '!');
+        for (let j = 1; j <= m; j++) {
+          const n = new Node(j);
+          that.data2.push(n);
+        }
+       // console.log(n);
+       //  const n1 = new Node(i);
+       //  n.linkCount++;
+       //  n1.linkCount++;
+        // that.data2.push(n1);
+       // console.log(that.data2);
+       // i = i + 2;
         observer.next(that.data2);
       };
     });
