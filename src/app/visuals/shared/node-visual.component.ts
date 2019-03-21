@@ -12,10 +12,20 @@ import {Node} from '../../d3/models';
           fill="steelblue"
           stroke="black">
       </svg:circle>
-      <svg:text
+      <svg:g translate="transform(20,20)">
+      <svg:text y="0"
       color="blue">
-        {{node.id}}
+        id: {{node.id}}
       </svg:text>
+        <svg:text y="10"
+                  color="blue">
+          x: {{node.x | number:'1.0-0'}}
+        </svg:text>
+        <svg:text y="20"
+                  color="blue">
+          y: {{node.y| number:'1.0-0'}}
+        </svg:text>
+      </svg:g>
     </svg:g>
   `
 })

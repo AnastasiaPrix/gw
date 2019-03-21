@@ -19,14 +19,10 @@ import {randomBates} from 'd3';
   styleUrls: ['./dashboard.component.css'],
 })
 
-export class DashboardComponent implements OnInit {
-  nodes: Observable<Node[]>;
+export class DashboardComponent {
+  nodes: Observable<PpuNode[]>;
+
   constructor(private breakpointObserver: BreakpointObserver, private nodeService: NodeService) {
-    this.nodes = nodeService.getNodes();
-
-  }
-
-  ngOnInit(): void {
-    console.log('in Init');
+    this.nodes = nodeService.getNodeStream();
   }
 }

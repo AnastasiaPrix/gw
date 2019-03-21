@@ -20,15 +20,12 @@ public class NodeController{
 	private NodeRepository nodeRepository;
 	
 	@GetMapping(path = "/node_stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	public Flux<String> getAllNodes(){
-		nodeRepository.getStream().subscribe(new Consumer<Node>() {
-
-			@Override
-			public void accept(Node t) {
-				System.out.println(t);
-				
-			}
-		});
-		return nodeRepository.getStream().map(item ->item.toString() );
+	public Flux<Node> getNodeUpdates(){
+		return nodeRepository.getNodesUpdates();
+	}
+	@GetMapping(path = "/nodes")
+	public Flux<Node> getAllNodes(){
+		return nodeRepository.getNodes();
 	}
 }
+

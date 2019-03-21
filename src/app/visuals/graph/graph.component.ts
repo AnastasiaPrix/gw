@@ -1,9 +1,12 @@
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Injectable, Input, OnInit} from '@angular/core';
 import {ForceDirectedGraph, Link, Node} from '../../d3';
-import {Observable} from 'rxjs';
+import {Observable, pipe} from 'rxjs';
 import * as d3 from 'd3';
+import * as _ from 'underscore';
+
 import {HttpClient} from '@angular/common/http';
 import {EventSourcePolyfill} from 'ng-event-source';
+import {map, subscribeOn, filter} from 'rxjs/operators';
 
 @Component({
   selector: 'app-graph',
@@ -11,12 +14,14 @@ import {EventSourcePolyfill} from 'ng-event-source';
   template: `
     <svg #svg [attr.width]="_options.width" [attr.height]="_options.height">
       <svg:g>
-      <svg:g [linkVisual]="link" *ngFor="let link of links  "></svg:g>
-        <svg:g [nodeVisual]="node" *ngFor="let node of nodes_r  "
+      <svg:g [linkVisual]="link" *ngFor="let link of links_r | async  "></svg:g>
+        <svg:g [nodeVisual]="node" *ngFor="let node of nodes_r | async  "
                [draggableNode] = "node" [draggableInGraph] = "graph"></svg:g>
       </svg:g>
     </svg>
-  `,
+    <p *ngFor="let n of links_r | async">Link {{n.source.id}} - {{n.target.id}} </p>
+    <p *ngFor="let n of nodes_r | async">Node {{n.index}} - {{n.id}} x: {{n.x}}</p>
+     `,
   styleUrls: ['./graph.component.css']
 })
 
@@ -27,12 +32,14 @@ export class GraphComponent implements OnInit, AfterViewInit {
 
   graph: ForceDirectedGraph;
   _options: { width, height } = { width: 800, height: 600 };
-  nodes_r: Node[] = [];
+  nodes_r: Observable<Node[]>;
   links: Link[] = [];
+  links_r: Observable<Link[]>;
   nodes2: Node[] = [];
   data_nodes: Node[] = [];
-  data_links: Link[] = [];
+  data_r: Node[] = [];
   flag: boolean;
+  max_id = -1;
   /* @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.graph.initSimulation(this.options);
@@ -44,7 +51,7 @@ constructor(private ref: ChangeDetectorRef, private http: HttpClient) {
 
   ngOnInit() {
    console.log('in constructor graph!');
-   this.graph = this.getForceDirectedGraph(this.nodes_r, this.links, this._options);
+   this.graph = this.getForceDirectedGraph([], [], this._options);
 
     this.graph.ticker.subscribe((d) => {
       this.ref.markForCheck();
@@ -54,45 +61,53 @@ constructor(private ref: ChangeDetectorRef, private http: HttpClient) {
   }
 
   ngAfterViewInit() {
-   // this.data_nodes.subscribe();
-    this.graph.initSimulation(this._options);
-    // let i = 1;
-    this.flag = false;
-    this.nodes.subscribe( x => {
-      // console.log(x.length!!);
-      if ( this.flag) {
-        this.nodes_r.length = 0;
-        this.links.length = 0;
-        this.flag = false;
-        this.nodes2.length = 0;
+    // const lls = [];
+    this.nodes_r = this.nodes.pipe(map(n =>
+      _.map(n, nn => {
+          nn.index = nn.id;
+          nn.x = nn.x ? nn.x : 200;
+          nn.y = nn.y ? nn.y : 200;
+          // this.data_r = n;
+          return nn;
+        })
+    ));
+    this.links_r = this.nodes_r.pipe(
+      map
+    )
+    console.log('!!!', this.data_r, '!!!');
+     // this.links_r = Observable.create(subscriber =>
+     //   lls.forEach(val => {
+     //     console.log('!!!!!!!!!!!!!!1');
+     //     console.log(val);
+     //     console.log('!!!!!!!!!!!!!!1');
+     //     subscriber.next(val); }
+     //   )
+     // );
+    this.links_r = Observable.create(subscriber => {
+      // this.data_r.forEach(nodes => {
+      // this.nodes_r.forEach(( n, index, all ) => {
+      const lls = [];
+      this.data_r.forEach( (n, index, all) => {
+          // const n1 = _.findIndex( this.data_r, item => (item.id === (n.id - 1) || item.id === (n.id + 1)) );
+          // if (n1 !== -1) {
+            // const ln = new Link( this.data_r[n1], n );
+            const ln = new Link(n, all[index === all.length - 1 ? index - 1 : index + 1]);
+            console.log(ln.source.id, '//', ln.target.id);
+            lls.push( ln );
+         // }
+          // const ln = new Link(n, all[index === all.length - 1 ? index - 1 : index + 1]);
+          // n.linkCount++;
+          // nodes[index].linkCount++;
 
-        // this.graph.initNodes();
-      }
-      this.nodes2 = x as Node[];
-      console.log(this.nodes2.length, '!!');
-      for (let i = 1; i <= this.nodes2.length; i++) {
-        this.nodes_r.push(new Node(i));
-       // console.log(this.nodes_r.length, '!');
-        // console.log('---------------------------1-----------------------');
-        if (this.nodes_r.length >= 2) {
-          this.nodes_r[i - 2].linkCount++;
-          this.nodes_r[i - 1].linkCount++;
-          this.links.push(new Link(i - 2 , i - 1)); }
-        this.graph.initNodes();
-      // i++;
-        this.flag = true;
-       }
-
-
-      // this.nodes_r = [];
-      // this.links = [];
-      // console.log(this.nodes2);
-      // console.log('---------------------------------------------------');
-       // console.log(this.nodes2);
-      // console.log('---------------------------2----------------------');
-      });
+          // });
+          subscriber.next( lls );
+        }
+      );
+    });
+       this.nodes_r.subscribe(xx => { this.graph.initNodes2(xx); console.log('initnodes'); } );
+       this.links_r.subscribe(xx => { this.graph.initLinks2(xx); console.log('initlinks'); });
+     // this.graph.initSimulation(this._options);
   }
-
   get options() {
     return this._options = {
       width: window.innerWidth,

@@ -5,9 +5,9 @@ import * as d3 from 'd3';
  import {Observable} from 'rxjs';
 
 const FORCES = {
-    LINKS: 1 / 10,
-    COLLISION: 0.5,
-    CHARGE: -0.5
+    LINKS: 1 / 20,
+    COLLISION: 0.1,
+    CHARGE: -20
 };
 
 export class ForceDirectedGraph {
@@ -42,7 +42,13 @@ export class ForceDirectedGraph {
 
         this.simulation.nodes(this.nodes);
         this.simulation.alpha(1);
+      //  this.simulation.alphaDecay(0.25);
         this.simulation.restart();
+    }
+    initNodes2(xx){
+    this.simulation.nodes(xx);
+    this.simulation.alpha(1);
+    this.simulation.restart();
     }
 
     initLinks() {
@@ -56,7 +62,17 @@ export class ForceDirectedGraph {
                 .strength(FORCES.LINKS)
         );
     }
+    initLinks2 (xx) {
+      if (!this.simulation) {
+        throw new Error('simulation was not initialized yet');
+      }
 
+      // Initializing the links force simulation
+      this.simulation.force('links',
+        d3.forceLink(xx)
+          .strength(FORCES.LINKS)
+      );
+    }
     initSimulation(options) {
         if (!options || !options.width || !options.height) {
             throw new Error('missing options when initializing simulation');
@@ -71,7 +87,19 @@ export class ForceDirectedGraph {
             .force('charge',
                 d3.forceManyBody()
                     .strength(FORCES.CHARGE)
+                  .distanceMax(options.width / 3 )
             );
+
+          this.simulation = d3.forceSimulation()
+            .force('collide',
+              d3.forceCollide(20)
+            );
+
+          // this.simulation = d3.forceSimulation()
+          //   .force('center',
+          //     d3.forceCenter(options.width / 2, options.height / 2).
+          //   );
+
 
             // Connecting the d3 ticker to an angular event emitter
             this.simulation.on('tick', function () {
